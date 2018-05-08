@@ -1,0 +1,157 @@
+body {
+    background-color: rgb(45, 48, 66);
+    color: white;
+    font-family: 'Hind', monospace;
+
+}
+
+.gridContainer {
+  margin: 2%;
+ height: 100%;
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+                        
+  grid-template-areas:" ci ci ci ci ci ci ci ci ci ci"
+                      " ci ci ci ci ci ci ci ci ci ci "
+                      " . . . . ba bb . . . . ";
+                       
+  grid-gap: 5px;
+  
+  z-index: 0;
+
+}
+
+
+#legendContainer{
+  width:1px;
+  height: 1px;
+  position: absolute;
+  z-index: -3
+
+}
+
+
+
+input {  /*grid-column-start: 2;*/
+  margin: 2%;
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  border-radius: 1px;
+  color: #ffffff;
+  font-size: 12px;
+  background: none;
+  padding: 10px 20px 10px 20px;
+  text-decoration: none;
+  margin-top: 2%;
+  margin-right: 2%;
+}
+
+#button1{
+  display: grid;
+  grid-area: ba;
+}
+
+#button2{
+  display: grid;
+  grid-area: bb;
+}
+
+.chartInfo{
+  display:grid;
+  text-align: center;
+  grid-area: ci;
+}
+
+#chart1title{
+ font-family: 'Encode Sans Semi Expanded', sans-serif;
+  font-size: 2em;
+  font-weight: thin;
+  color: #b4b4b4;
+}
+
+#chart1subtitle{
+  font-size: 1em;
+  font-weight: thin;
+  color: #b4b4b4;
+}
+
+
+
+input:hover{
+  background:  rgb(77, 175, 74);
+}
+ input:focus {
+  background: #ffffff;
+  color: #000000;
+
+  text-decoration: none;
+      outline:none;
+
+}
+
+
+
+.chartTitle{
+  position: absolute;
+  z-index: 1.5;
+  /*float: left;*/
+  font-size: 2em;
+  margin: 0px;
+  padding: 0px;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: none;
+  shape-rendering: crispEdges;
+}
+
+.titleStyle{
+  font-family: 'Dosis', sans-serif;
+  font-weight: bold;
+
+  
+}
+.axis text, .legendG text, .g2 text {
+  font: 12px;
+  fill: #b4b4b4;
+  font-family: 'Hind', monospace;
+  padding: 1000px;
+}
+
+
+#tooltip{
+   position: absolute;
+    text-align: left;			
+    width: inherit;					
+    height: inherit;					
+    padding: 10px;				
+    font-size: 12px;		
+    background: rgba(0, 0, 0, .5);	
+    z-index: 3;
+    
+    
+}
+
+.svgA{
+  position: absolute;
+  z-index: -1;
+}
+
+.circle {
+    stroke: rgba(0,0,0,0);
+    stroke-width: 4;
+}
+
+.cells path {
+  fill: none;
+  /*stroke: #ffffff;*/
+  pointer-events: all;
+}
+
+.cells :hover circle {
+  fill: #ffffff;
+}
+
+
