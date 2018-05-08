@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<head>
+<link rel="stylesheet" href="swarm.css" type="text/css" />
+<link href="https://fonts.googleapis.com/css?family=Dosis:400,600,700|Hind:400,600,700|Inconsolata:400,700" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css?family=Encode+Sans+Semi+Expanded:200,700" rel="stylesheet">
+
+
+</head>
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<script src="https://d3js.org/d3-scale-chromatic.v0.3.min.js"></script>
+
+<body>
+        <div class="legend" id="legendContainer">
+        
+    </div>
+    
+<div class = "gridContainer">
+    
+<div id="button1">
+    <input name="countButton" 
+           type="button" 
+           value="Sort By Month" 
+           id = "sortByMonth"
+    />
+</div>
+<div id="button2">
+    <input name="inputPerFilmButton" 
+           type="button" 
+           title= "Opening Gross"
+           value="Sort By Year" 
+           id = "sortByYear" />
+</div>
+    <div class="chartInfo" id = "swarm">
+    <span class="chartSubInfo" id = "chart1title">Is time of year related to film earnings?</span>
+    <span class="chartSubInfo" id = "chart1subtitle">Highest Grossing Films from 2014 to 2016: Colored by genre, sized by opening gross earnings, and placed in time.</span>
+    </div>
+</div>
+<div class = "divA">
+</div>
+<div class = "tooltip"></div>
+
+<script src="swarm.js"></script>
+
+</body>
+</html>
