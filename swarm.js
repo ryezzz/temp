@@ -28,6 +28,7 @@ var intToMoneyFormatter = new Intl.NumberFormat('en-US', {
     minimumFractionDigits: 0,
 });
 
+var dateFormat = d3.timeFormat("%B %d, %Y")
 
 //Converts object values into an array
 function returnOrdArray (returnArray, target){
@@ -43,7 +44,7 @@ var colorScale = d3.scaleOrdinal(d3.schemeSet1)
 var colorScaleLegend = [];
 
 //This is the initial time parser that changes my entire dataset to d3 time
-var parseTime = d3.timeParse("%m/%d/%y")
+// var parseTime = d3.timeParse("%Y-%b-%d")
 
 //First Axis
 var x = d3.scaleTime()
@@ -74,23 +75,26 @@ function renderA(data) {
     var monthlyOpeningAverages = d3.nest()
     .key(function(d) { return d.month; })
     .rollup(function(v) { 
-        return d3.sum(v, function(d) { return d['Opening Gross'];
+        return d3.sum(v, function(d) { return d['Total Gross'];
         //change to d3.mean for average per film
         });
     })
     .entries(data);
     
 //sort average by month
-    monthlyOpeningAverages.sort(function (a, b) {
-    return a.key - b.key;
-    });
+    // monthlyOpeningAverages.sort(function (a, b) {
+    // return a.key - b.key;
+    // });
     
+ 
 //Turn Averages into $
     monthlyOpeningAverages.forEach(function(d, i){
         monthlyOpeningAverages[i].value = intToMoneyFormatter.format (Math.round(monthlyOpeningAverages[i].value))
     })
     
-
+    monthlyOpeningAverages.sort(function (a, b) {
+    return a['Total Gross'] - b['Total Gross'];
+    });  
 //Create scale for circle size
     var sizeScale = d3.scaleLinear()
         .domain([0, d3.max(testMaxOpening)])
@@ -110,7 +114,7 @@ function renderA(data) {
         .force("x", d3.forceX(function(d) { return x(d.averagedYear); }).strength(5))
         .force("y", d3.forceY(heightA / 2.7))
 //force collide treats nodes as circles with a radius to prevent them from colliding: this is set the same as my circle's "r"
-        .force("collide", d3.forceCollide(function(d) { return sizeScale(d['Opening Gross']) }))
+        .force("collide", d3.forceCollide(function(d) { return sizeScale(d['Total Gross']) }))
         .stop()
 
 //The cluster force simulation isn't a moving simulation for this projct: It manually ticks through the simulation using a for loop.
@@ -137,7 +141,7 @@ function renderA(data) {
          .delay(200)
          .duration(200)
          .style("font-size", textSize)
-
+    // console.log(dateFormat(data[0]['Open Date']))
     var cell = g.append("g")
         .attr("class", "cells")
         .selectAll("g")
@@ -151,8 +155,8 @@ function renderA(data) {
 //it out: This is a workaround that I'd like to fix.
         .attr("id", function(d) {
                 return "<span class = 'titleStyle'>" + d.data.Title.replace(/ /g, "_") + "</span>" +  "*" 
+                + dateFormat(d.data['Open Date']) + "*"
                 + d.data.Genre.replace(/ /g, "_").replace("/", "&") + "*"
-                + "Opening: " + intToMoneyFormatter.format (d.data['Opening Gross']) + "*"
                 + "Total: " + intToMoneyFormatter.format (d.data['Total Gross']) + "*"
         });
 
@@ -164,7 +168,7 @@ function renderA(data) {
         .transition()
         .delay(200)
         .duration(200)
-        .attr("r", function(d) {return sizeScale(d.data['Opening Gross']) })
+        .attr("r", function(d) {return sizeScale(d.data['Total Gross']) })
         .attr('fill', function(d){return colorScale(d.data.simpleGenre) })
  //save colorScale in an object
                   
@@ -174,7 +178,7 @@ function renderA(data) {
         .attr("d", function(d) { if (d) { return "M" + d.join("L") + "Z"; } })
 // This is a great way to attach titles except they take about 3 seconds to load
 // cell.append("title")
-// .text(function(d) { return d.data.Title + d.data.Genre + "\n" + formatter.format(d.data['Opening Gross']); });
+// .text(function(d) { return d.data.Title + d.data.Genre + "\n" + formatter.format(d.data['Total Gross']); });
         
     
     cell.on("mouseover", function(d){
@@ -269,12 +273,12 @@ function renderB(data, i) {
 
     x.domain(d3.extent(data, function(d) { return d['Open Date']}));
     
-    x3.domain([new Date(2014, 0, 1),  new Date(2016, 12, 0)]);
+    x3.domain([new Date(2006, 0, 1),  new Date(2016, 12, 0)]);
 
     var simulation = d3.forceSimulation(data)
-        .force("x", d3.forceX(function(d) { return x(d['Open Date']); }).strength(5))
+        .force("x", d3.forceX(function(d) { return x(d['Open Date']); }).strength(1))
         .force("y", d3.forceY(heightA / 3))
-        .force("collide", d3.forceCollide(function(d) { return myScale(d['Opening Gross']) }))
+        .force("collide", d3.forceCollide(function(d) { return myScale(d['Total Gross']) }))
         .stop()
 
 
@@ -284,7 +288,7 @@ function renderB(data, i) {
         .attr("class", "axis axis--x")
         .attr("id", "axis1")
         .attr("transform", "translate(0," + 290 + ")")
-        .call(d3.axisBottom(x3).ticks(d3.timeMonth, 2).tickFormat(d3.timeFormat("%b")))
+        .call(d3.axisBottom(x3).ticks(d3.timeMonth, 0).tickFormat(d3.timeFormat("%b")))
         .style("font-size", 0)
 
         
@@ -310,9 +314,9 @@ function renderB(data, i) {
         .y(function(d) { return d.y; })
         .polygons(data)).enter().append("g")
         .attr("id", function(d) {
-            return "<span class = 'titleStyle'>" + d.data.Title.replace(/ /g, "_") + "</span>" +  "*" 
+                return "<span class = 'titleStyle'>" + d.data.Title.replace(/ /g, "_") + "</span>" +  "*" 
+                + dateFormat(d.data['Open Date']) + "*"
                 + d.data.Genre.replace(/ /g, "_").replace("/", "&") + "*"
-                + "Opening: " + intToMoneyFormatter.format (d.data['Opening Gross']) + "*"
                 + "Total: " + intToMoneyFormatter.format (d.data['Total Gross']) + "*"
         });
 
@@ -320,12 +324,12 @@ function renderB(data, i) {
            
     var circle = cell.append("circle")
         .attr("class", "circle")
-        .attr("cx", function(d) { if (d) { return d.data.x }; })
+        .attr("cx", function(d) { return d.data.x; })
         .attr("cy", function(d) { if (d) { return d.data.y }; })
         .transition()
         .delay(100)
         .duration(200)
-        .attr("r", function(d) { return myScale(d.data['Opening Gross']) })
+        .attr("r", function(d) { return myScale(d.data['Total Gross']) })
         .attr('fill', function(d){return colorScale(d.data.simpleGenre) })
         
 
@@ -398,7 +402,7 @@ function renderLegend(data){
         
                      
         var preText = legendLablesG.append('text')
-                      .text(function(d){return "Opening Gross of: "})
+                      .text(function(d){return "Total Gross of: "})
                       .attr('text-anchor', 'middle')
                       .attr('x', 70)
                       .attr('y', -10)
@@ -423,32 +427,42 @@ function renderLegend(data){
 ////////////////////////////////////////////
 ////////////////Load Data//////////////////
 ////////////////////////////////////////
+var parseTime = d3.timeParse("%m/%d/%y")
 
-d3.csv("movies.csv", function(error, data) {
-    console.log(data)
+
+d3.csv('movies.csv').then(function(data) {
+      // data is now whole data set
+// console.log(data)
+
+    
     data.forEach(function(d, i) {
-        console.log(d)
-        d['Opening Gross'] = d['Opening Gross'].replace('$', '').replace(/,/g, '')
-        d['Opening Gross'] = +d['Opening Gross'];
-        d['Total Gross'] = d['Total Gross'].replace('$', '').replace(/,/g, '')
+        // console.log(d)
+
         d['Total Gross'] = +d['Total Gross'];
         var month = d['Open Date'].split('/')[0]
-        var day = d['Open Date'].split('/')[0]
-        var genreSimple = d.Genre.split(' ')[0]
-        d.month = +month;
-        var averagedYear = month +"/"+ 1 +"/16"
-        d.averagedYear = parseTime(averagedYear)
-        d.averagedYear = d.averagedYear
-        d['Open Date'] = parseTime(d['Open Date'])
-        d.simpleGenre = genreSimple
-        testMaxOpening.push(d['Opening Gross'])
-        });
         
-    data = data.sort(function (a, b) {return b['Opening Gross'].value - b['Opening Gross'].value;
+        
+        var day = d['Open Date'].split('/')[1]
+        var genreSimple = d.Genre
+        d.month = +month;
+        var averagedYear = month +"/"+ 1 + '/' + 16
+        d.averagedYear = parseTime(averagedYear)
+        // d.averagedYear = d.averagedYear
 
-    });
+        d['Open Date'] = parseTime(d['Open Date'])
+        // console.log(parseTime(averagedYear))
+        // console.log(averagedYear)
+        d.simpleGenre = genreSimple
+        testMaxOpening.push(d['Total Gross'])
+            // console.log(d)
+        
+   })
+    // data = data.sort(function (a, b) {return b['Total Gross'].value - b['Total Gross'].value;
+    // });
     
-    
+
+
+// console.log(data[0])
     
 //////////////////////////////////////////////////////
 ////////Render final charts and Create buttons/////////// 
